@@ -3,22 +3,21 @@
 Cursor용 **글로벌 엔지니어링 거버넌스** 룰 템플릿입니다.  
 보안 · 정확성 · 계정 검증 · 시크릿 · 멀티테넌트 · 배포 안전 등 **제품 요구사항이 아닌** 공통 엔지니어링 규칙을 Agent에 주입합니다.
 
-회사명·개인 이메일·내부 프로젝트명은 **모두 플레이스홀더**로 비워 두었습니다. 포크하거나 받은 뒤 `YOUR_*`만 채우면 됩니다.
+회사명·개인 이메일·내부 프로젝트명은 **플레이스홀더**입니다.  
+`./install.sh` 실행 시 **GitHub / Supabase / Vercel 계정(이메일)** 을 물어보고 `account-map.mdc`에 저장합니다. (비밀번호·API 키는 절대 입력하지 마세요.)
 
 | 파일 | 역할 |
 |------|------|
 | [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | Cursor에 바로 넣는 **요약 룰** (`alwaysApply: true`) |
 | [`GOVERNANCE.md`](GOVERNANCE.md) | §0–§42 **전문** (읽기·커스터마이즈용) |
-| [`templates/account-map.example.mdc`](templates/account-map.example.mdc) | 프로젝트별 계정 맵 예시 |
-| [`install.sh`](install.sh) | 한 줄 설치 스크립트 |
+| [`templates/account-map.example.mdc`](templates/account-map.example.mdc) | 계정 맵 템플릿 (설치 스크립트가 채움) |
+| [`install.sh`](install.sh) | 설치 + **계정 입력 프롬프트** |
 
 ---
 
 ## 적용 방법 (권장 순서)
 
 ### A. 유저 전역 (모든 프로젝트에 적용)
-
-모든 Cursor 작업에 공통으로 걸립니다.
 
 ```bash
 git clone https://github.com/JakeLim17/cursor-engineering-governance.git
@@ -27,18 +26,20 @@ chmod +x install.sh
 ./install.sh
 ```
 
-설치 위치: `~/.cursor/rules/engineering-governance.mdc`
+실행 중 예시:
 
-### B. 프로젝트만 (해당 레포에만 적용)
-
-```bash
-# 적용할 프로젝트 루트에서
-curl -fsSL https://raw.githubusercontent.com/JakeLim17/cursor-engineering-governance/main/install.sh -o /tmp/ceg-install.sh
-# 또는 clone 후:
-# /path/to/cursor-engineering-governance/install.sh --project
+```text
+GitHub account/email: you@example.com
+Supabase account/email: you@example.com
+Vercel account/email: you@example.com
 ```
 
-클론한 폴더에서:
+설치 위치:
+
+- `~/.cursor/rules/engineering-governance.mdc`
+- `~/.cursor/rules/account-map.mdc` ← 입력한 메일/계정
+
+### B. 프로젝트만 (해당 레포에만 적용)
 
 ```bash
 cd /path/to/your-app
@@ -48,7 +49,9 @@ cd /path/to/your-app
 설치 위치:
 
 - `your-app/.cursor/rules/engineering-governance.mdc`
-- `your-app/.cursor/rules/account-map.mdc` (없으면 생성 → `YOUR_*` 수정)
+- `your-app/.cursor/rules/account-map.mdc` ← 설치 시 입력
+
+프로젝트 맵이 있으면 **전역 맵보다 우선**합니다.
 
 ### C. 수동 복사
 
@@ -69,22 +72,34 @@ UI 메뉴명은 Cursor 버전에 따라 조금 다를 수 있습니다. 파일�
 
 ---
 
-## 설치 후 꼭 할 일
+## 설치 옵션
 
-1. **계정 맵 채우기** (이메일·계정 ID만, 비밀번호/키는 넣지 말 것)
+| 옵션 / 환경변수 | 의미 |
+|-----------------|------|
+| (기본) | 대화형으로 계정 3개 입력 |
+| `--project` | 현재 폴더 `.cursor/rules`에 설치 |
+| `--skip-accounts` | 룰만 설치, 계정 질문 생략 |
+| `--yes` | 질문 없이 env/플레이스홀더로 기록 (CI용) |
+| `GITHUB_ACCOUNT` / `SUPABASE_ACCOUNT` / `VERCEL_ACCOUNT` | 비대화형 값 |
 
-```text
-GitHub:    YOUR_GITHUB_ACCOUNT_OR_EMAIL
-Supabase:  YOUR_SUPABASE_ACCOUNT_OR_EMAIL
-Vercel:    YOUR_VERCEL_ACCOUNT_OR_EMAIL
+예 (스크립트):
+
+```bash
+GITHUB_ACCOUNT=dev@example.com \
+SUPABASE_ACCOUNT=dev@example.com \
+VERCEL_ACCOUNT=dev@example.com \
+./install.sh --yes
 ```
 
-- 팀 공통 기본값 → `GOVERNANCE.md` §6 또는 전역 룰 옆 메모  
-- 프로젝트마다 다르면 → **프로젝트** `account-map.mdc`만 수정 (글로벌 룰은 건드리지 않기)
+나중에 바꾸려면 `account-map.mdc`를 직접 수정하거나, 설치를 다시 실행하면 됩니다.
 
-2. **검증**: 새 Agent 채팅에서  
-   > “지금 적용 중인 글로벌 엔지니어링 거버넌스 우선순위가 뭐야?”  
-   라고 물어보고, Security > Correctness … 순서가 나오면 적용된 것입니다.
+## 설치 후 검증
+
+새 Agent 채팅에서:
+
+> “account-map에 등록된 GitHub / Supabase / Vercel 계정이 뭐야?”
+
+입력한 값이 나오면 적용된 것입니다.
 
 ---
 
@@ -116,9 +131,9 @@ Vercel:    YOUR_VERCEL_ACCOUNT_OR_EMAIL
 
 ## English (short)
 
-1. `./install.sh` → user-global `~/.cursor/rules/`  
-2. `./install.sh --project` → current repo `.cursor/rules/` + account-map template  
-3. Fill `YOUR_*` placeholders (identity only, no secrets)  
+1. `./install.sh` — installs rules and **prompts for GitHub / Supabase / Vercel emails**  
+2. `./install.sh --project` — same, into the current repo  
+3. Identity only (no passwords/API keys). Or set `GITHUB_ACCOUNT` etc. with `--yes`  
 4. Restart Cursor / new Agent chat  
 
-Full text: [`GOVERNANCE.md`](GOVERNANCE.md). Compact always-on rule: [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc).
+Full text: [`GOVERNANCE.md`](GOVERNANCE.md). Compact rule: [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc).

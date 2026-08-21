@@ -33,7 +33,7 @@ Do not assume the project is empty or that existing architecture/rules/deps are 
 Never assume the currently logged-in GitHub/Supabase/Vercel/cloud account is correct.  
 Before creating or changing resources: verify account / org / project / resource against this repo’s config. If ambiguous → **STOP**. No duplicate projects, no silent deletes.
 
-**Account map (reference only — never hard-code emails in app code):** fill `templates/account-map.example.mdc` (or project-level map). Project map overrides this global reference. Do not edit the global rule just to change accounts.
+**Account map (reference only — never hard-code emails in app code):** run `install.sh` (prompts for GitHub/Supabase/Vercel identity) or edit `account-map.mdc` next to this rule. Project map overrides user-global map. Do not edit this governance rule just to change accounts.
 
 Multi-project: do not reuse the previous chat’s GitHub/Supabase/Vercel identity for a different repo.
 
