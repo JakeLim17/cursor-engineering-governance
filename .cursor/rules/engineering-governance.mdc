@@ -1,0 +1,68 @@
+---
+description: Global engineering governance — security, accounts, tenants, deploy safety (not product requirements)
+alwaysApply: true
+---
+
+# Global Engineering Governance (1.0)
+
+Applies to all Cursor work in this environment. **Not a product requirements doc.**
+
+If a repo has more specific `AGENTS.md` / `.cursor/rules`, prefer those — but **never** trade away security or correctness for speed.
+
+Conflict order: platform/system → security → project/business rules → this global rule → general preferences.
+
+## Priorities
+
+Security > correctness > data integrity > maintainability > performance > UX > speed.  
+Prefer simple, maintainable solutions. No unnecessary complexity or rewrites.
+
+## Existing project first
+
+Before changing anything: **INSPECT** structure, lockfile, architecture, tests, env, deploy, DB, existing rules/skills/MCP.  
+Do not assume the project is empty or that existing architecture/rules/deps are wrong. Do not break working code without a justified reason.
+
+## Git & secrets
+
+- No force push, unrelated resets, history rewrites, or secret/`.env` commits without explicit approval
+- Meaningful, focused commits; inspect diff; run relevant lint/tests before commit
+- Keep `.env.example` with **names only** (no real values). When reporting env: **name + configured/not** — never values
+- Never put server secrets in client code (if unsure, treat as secret)
+
+## Accounts & external services
+
+Never assume the currently logged-in GitHub/Supabase/Vercel/cloud account is correct.  
+Before creating or changing resources: verify account / org / project / resource against this repo’s config. If ambiguous → **STOP**. No duplicate projects, no silent deletes.
+
+**Account map (reference only — never hard-code emails in app code):** fill `templates/account-map.example.mdc` (or project-level map). Project map overrides this global reference. Do not edit the global rule just to change accounts.
+
+Multi-project: do not reuse the previous chat’s GitHub/Supabase/Vercel identity for a different repo.
+
+## Multi-tenant & APIs
+
+Tenant isolation is **server-side**. Never trust client org/tenant/role/ownership.  
+Auth ≠ authorization — verify authorization on every protected action.  
+Validate input against SQLi, XSS, CSRF, SSRF, IDOR, mass assignment, path traversal, unsafe redirects.
+
+Uploads are untrusted: size, MIME, extension, auth, path. Do not make private storage public for convenience; use signed URLs when needed.
+
+Do not send passwords, tokens, or unnecessary PII to AI providers. Keep tenant boundaries. Important data changes need validation/confirmation.
+
+## DB & deploy
+
+Migrations only; no prod reset/drop/truncate without explicit approval.  
+Before deploy: repo, branch, target account/project, env, migrations, build, tests. Never deploy to an unknown project.
+
+## Quality
+
+Do not silently swallow errors. User errors must not leak secrets/stacks. Never log secrets.  
+Before claiming meaningful work done: lint / typecheck / test / build as applicable. Do not fake green CI by skipping tests.
+
+## CI · deploy alerts
+
+Do not leave GitHub Actions / host deploy failures ignored. Prefer fixing root cause over muting alerts. Do not skip tests or disable gates to fake green.
+
+Verify GitHub account ≠ hosting account when they differ. Connect auto-deploy only after required env (including secrets) is set.
+
+## When uncertain
+
+INSPECT. Security → VERIFY. Destructive → STOP. Routine → PROCEED. Failure → fix root cause. Working solution → improve, don’t rewrite. Project rule exists → follow it unless it violates security/higher rules.

@@ -1,0 +1,19 @@
+---
+description: Project-level service account map (overrides global governance account reference)
+alwaysApply: true
+---
+
+# Project account map
+
+Fill in your real accounts for **this project only**.  
+Do not put passwords or API keys here — account identity only.
+
+```text
+GitHub:    YOUR_GITHUB_ACCOUNT_OR_EMAIL
+Supabase:  YOUR_SUPABASE_ACCOUNT_OR_EMAIL
+Vercel:    YOUR_VERCEL_ACCOUNT_OR_EMAIL
+```
+
+Before creating or changing external resources, verify the logged-in CLI/console account matches this map.
+
+Never hard-code these values into application source code.
