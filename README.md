@@ -6,6 +6,10 @@ Cursor용 **글로벌 엔지니어링 거버넌스 v1.1** 룰 템플릿입니다
 회사명·개인 이메일·내부 프로젝트명은 **플레이스홀더를 넣지 않습니다**.  
 `./install.sh` 실행 시 **프로바이더 카테고리별 계정(이메일)** 을 물어보고 `account-map.mdc`에 저장합니다. (비밀번호·API 키는 절대 입력하지 마세요.)
 
+**핵심 안내:**
+
+> 전역 account-map은 팀 **기본 힌트**입니다. 설치 시 아는 계정만 입력하고, 모르는 카테고리는 비워 두세요. Supabase·Vercel 등은 **프로젝트 생성·연동할 때** 개발자가 그 레포에 맞게 조정합니다. 프로젝트별 계정이 다르면 `<repo>/.cursor/rules/account-map.mdc`를 추가하면 전역보다 우선합니다.
+
 | 파일 | 역할 |
 |------|------|
 | [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | Cursor에 바로 넣는 **요약 룰** (`alwaysApply: true`) |
@@ -159,6 +163,10 @@ DATABASE_ACCOUNT=dev@example.com \
 ---
 
 ## English (short)
+
+**Key guidance:**
+
+> The global account-map is a **team default hint**. Enter only accounts you know at install time; leave unknown categories blank. Adjust Supabase, Vercel, etc. per repo when creating or linking projects. For project-specific accounts, add `<repo>/.cursor/rules/account-map.mdc` — it overrides the global map.
 
 1. `./install.sh` — installs rules and **prompts for provider-category emails**  
 2. `./install.sh --project` — same, into the current repo  
