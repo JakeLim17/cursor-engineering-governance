@@ -8,12 +8,17 @@
 #   ./install.sh --skip-accounts # install rules only (no account-map prompt)
 #
 # Non-interactive (CI / scripted):
-#   GITHUB_ACCOUNT=you@example.com \
-#   SUPABASE_ACCOUNT=you@example.com \
-#   VERCEL_ACCOUNT=you@example.com \
+#   SOURCE_CONTROL_ACCOUNT=you@example.com \
+#   HOSTING_ACCOUNT=you@example.com \
+#   DATABASE_ACCOUNT=you@example.com \
+#   CLOUD_ACCOUNT= \
+#   CDN_ACCOUNT= \
 #   ./install.sh --yes
 #
-# Env overrides (optional): GITHUB_ACCOUNT, SUPABASE_ACCOUNT, VERCEL_ACCOUNT
+# Env overrides (v1.1): SOURCE_CONTROL_ACCOUNT, HOSTING_ACCOUNT, DATABASE_ACCOUNT,
+#   CLOUD_ACCOUNT, CDN_ACCOUNT
+# Backward compat (v1.0): GITHUB_ACCOUNT → SOURCE_CONTROL_ACCOUNT,
+#   VERCEL_ACCOUNT → HOSTING_ACCOUNT, SUPABASE_ACCOUNT → DATABASE_ACCOUNT
 
 set -euo pipefail
 
@@ -27,15 +32,22 @@ DEST=""
 MODE="global"
 
 usage() {
-  sed -n '2,18p' "$0"
+  sed -n '2,22p' "$0"
 }
 
 prompt_value() {
-  # $1 label  $2 default
+  # $1 label  $2 default  $3 optional hint (e.g. "Enter to skip")
   local label="$1"
   local default="${2:-}"
+  local hint="${3:-}"
   local input=""
-  if [[ -n "$default" ]]; then
+  if [[ -n "$hint" ]]; then
+    if [[ -n "$default" ]]; then
+      printf "%s [%s] (%s): " "$label" "$default" "$hint" >&2
+    else
+      printf "%s (%s): " "$label" "$hint" >&2
+    fi
+  elif [[ -n "$default" ]]; then
     printf "%s [%s]: " "$label" "$default" >&2
   else
     printf "%s: " "$label" >&2
@@ -52,12 +64,25 @@ prompt_value() {
   fi
 }
 
+resolve_account_env() {
+  # $1 new env name  $2 legacy env name
+  local new_val="${!1:-}"
+  local legacy_val="${!2:-}"
+  if [[ -n "$new_val" ]]; then
+    echo "$new_val"
+  else
+    echo "$legacy_val"
+  fi
+}
+
 write_account_map() {
   local dest_file="$1"
-  local github="$2"
-  local supabase="$3"
-  local vercel="$4"
-  local scope_line="$5"
+  local source_control="$2"
+  local hosting="$3"
+  local database="$4"
+  local cloud="$5"
+  local cdn="$6"
+  local scope_line="$7"
 
   cat >"$dest_file" <<EOF
 ---
@@ -70,47 +95,52 @@ alwaysApply: true
 ${scope_line}
 
 Do not put passwords or API keys here — account identity only.
+Leave a row blank if this install does not use that provider.
 
 \`\`\`text
-GitHub:    ${github}
-Supabase:  ${supabase}
-Vercel:    ${vercel}
+Source control:   GitHub / GitLab / Bitbucket           → ${source_control}
+Hosting/Deploy:   Vercel / Netlify / Railway / Render    → ${hosting}
+Database/BaaS:    Supabase / Firebase / PlanetScale / Neon → ${database}
+Cloud:            AWS / GCP / Azure                      → ${cloud}
+CDN/Edge:         Cloudflare                              → ${cdn}
 \`\`\`
 
 Before creating or changing external resources, verify the logged-in CLI/console account matches this map.
+If a category is blank, treat it as **unverified** — confirm the correct account with the user before modifying that provider.
 
 Never hard-code these values into application source code.
 EOF
 }
 
 collect_accounts() {
-  local github supabase vercel
+  local source_control hosting database cloud cdn
 
   echo "" >&2
   echo "Account map (email or account id only — never passwords/API keys)" >&2
-  echo "Leave blank to keep placeholder; you can edit account-map.mdc later." >&2
+  echo "Leave blank to leave that category unverified; edit account-map.mdc later." >&2
   echo "" >&2
 
-  github="${GITHUB_ACCOUNT:-}"
-  supabase="${SUPABASE_ACCOUNT:-}"
-  vercel="${VERCEL_ACCOUNT:-}"
+  source_control="$(resolve_account_env SOURCE_CONTROL_ACCOUNT GITHUB_ACCOUNT)"
+  hosting="$(resolve_account_env HOSTING_ACCOUNT VERCEL_ACCOUNT)"
+  database="$(resolve_account_env DATABASE_ACCOUNT SUPABASE_ACCOUNT)"
+  cloud="${CLOUD_ACCOUNT:-}"
+  cdn="${CDN_ACCOUNT:-}"
 
   if [[ "$ASSUME_YES" -eq 1 ]]; then
-    github="${github:-YOUR_GITHUB_ACCOUNT_OR_EMAIL}"
-    supabase="${supabase:-YOUR_SUPABASE_ACCOUNT_OR_EMAIL}"
-    vercel="${vercel:-YOUR_VERCEL_ACCOUNT_OR_EMAIL}"
+    : # use env values as-is (empty allowed)
   else
-    github="$(prompt_value "GitHub account/email" "${github}")"
-    supabase="$(prompt_value "Supabase account/email" "${supabase}")"
-    vercel="$(prompt_value "Vercel account/email" "${vercel}")"
-    [[ -z "$github" ]] && github="YOUR_GITHUB_ACCOUNT_OR_EMAIL"
-    [[ -z "$supabase" ]] && supabase="YOUR_SUPABASE_ACCOUNT_OR_EMAIL"
-    [[ -z "$vercel" ]] && vercel="YOUR_VERCEL_ACCOUNT_OR_EMAIL"
+    source_control="$(prompt_value "Source control (GitHub/GitLab/Bitbucket)" "${source_control}")"
+    hosting="$(prompt_value "Hosting/Deploy (Vercel/Netlify/Railway/Render)" "${hosting}")"
+    database="$(prompt_value "Database/BaaS (Supabase/Firebase/PlanetScale/Neon)" "${database}")"
+    cloud="$(prompt_value "Cloud (AWS/GCP/Azure)" "${cloud}" "Enter to skip")"
+    cdn="$(prompt_value "CDN/Edge (Cloudflare)" "${cdn}" "Enter to skip")"
   fi
 
-  GITHUB_VAL="$github"
-  SUPABASE_VAL="$supabase"
-  VERCEL_VAL="$vercel"
+  SOURCE_CONTROL_VAL="$source_control"
+  HOSTING_VAL="$hosting"
+  DATABASE_VAL="$database"
+  CLOUD_VAL="$cloud"
+  CDN_VAL="$cdn"
 }
 
 if [[ ! -f "$SRC_RULE" ]]; then
@@ -166,14 +196,16 @@ cp "$SRC_RULE" "$DEST/engineering-governance.mdc"
 echo "installed: $DEST/engineering-governance.mdc"
 
 MAP_FILE="$DEST/account-map.mdc"
-GITHUB_VAL=""
-SUPABASE_VAL=""
-VERCEL_VAL=""
+SOURCE_CONTROL_VAL=""
+HOSTING_VAL=""
+DATABASE_VAL=""
+CLOUD_VAL=""
+CDN_VAL=""
 
 if [[ "$SKIP_ACCOUNTS" -eq 1 ]]; then
   if [[ ! -f "$MAP_FILE" ]]; then
     cp "$SRC_MAP" "$MAP_FILE"
-    echo "installed: $MAP_FILE  (placeholders — edit later or re-run without --skip-accounts)"
+    echo "installed: $MAP_FILE  (blank rows — edit later or re-run without --skip-accounts)"
   else
     echo "skip: $MAP_FILE already exists (--skip-accounts)"
   fi
@@ -213,11 +245,13 @@ else
       ;;
   esac
 
-  write_account_map "$MAP_FILE" "$GITHUB_VAL" "$SUPABASE_VAL" "$VERCEL_VAL" "$SCOPE"
+  write_account_map "$MAP_FILE" "$SOURCE_CONTROL_VAL" "$HOSTING_VAL" "$DATABASE_VAL" "$CLOUD_VAL" "$CDN_VAL" "$SCOPE"
   echo "installed: $MAP_FILE"
-  echo "  GitHub:   $GITHUB_VAL"
-  echo "  Supabase: $SUPABASE_VAL"
-  echo "  Vercel:   $VERCEL_VAL"
+  echo "  Source control: $SOURCE_CONTROL_VAL"
+  echo "  Hosting/Deploy: $HOSTING_VAL"
+  echo "  Database/BaaS:  $DATABASE_VAL"
+  echo "  Cloud:          $CLOUD_VAL"
+  echo "  CDN/Edge:       $CDN_VAL"
 fi
 
 echo "done. Restart Cursor or start a new Agent chat so rules reload."

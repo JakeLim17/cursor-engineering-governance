@@ -5,15 +5,18 @@ alwaysApply: true
 
 # Project account map
 
-Fill in your real accounts for **this project only**.  
-Do not put passwords or API keys here — account identity only.
+Fill in your real accounts for **this project only** — identity only, no passwords or API keys.  
+Leave a row blank or delete it if this project does not use that provider. Do not leave placeholder text as if it were a real value.
 
 ```text
-GitHub:    YOUR_GITHUB_ACCOUNT_OR_EMAIL
-Supabase:  YOUR_SUPABASE_ACCOUNT_OR_EMAIL
-Vercel:    YOUR_VERCEL_ACCOUNT_OR_EMAIL
+Source control:   GitHub / GitLab / Bitbucket           →
+Hosting/Deploy:   Vercel / Netlify / Railway / Render    →
+Database/BaaS:    Supabase / Firebase / PlanetScale / Neon →
+Cloud:            AWS / GCP / Azure                      →
+CDN/Edge:         Cloudflare                              →
 ```
 
-Before creating or changing external resources, verify the logged-in CLI/console account matches this map.
+Before creating or changing external resources, verify the logged-in CLI/console account matches this map.  
+If a category is blank, treat it as **unverified** — confirm the correct account with the user before modifying that provider.
 
 Never hard-code these values into application source code.

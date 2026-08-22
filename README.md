@@ -1,15 +1,15 @@
 # Cursor Engineering Governance
 
-Cursor용 **글로벌 엔지니어링 거버넌스** 룰 템플릿입니다.  
-보안 · 정확성 · 계정 검증 · 시크릿 · 멀티테넌트 · 배포 안전 등 **제품 요구사항이 아닌** 공통 엔지니어링 규칙을 Agent에 주입합니다.
+Cursor용 **글로벌 엔지니어링 거버넌스 v1.1** 룰 템플릿입니다.  
+보안 · 정확성 · 계정 검증 · 시크릿 · 멀티테넌트 · 배포 안전 · AI/웹훅 · 비용 가드레일 등 **제품 요구사항이 아닌** 공통 엔지니어링 규칙을 Agent에 주입합니다.
 
-회사명·개인 이메일·내부 프로젝트명은 **플레이스홀더**입니다.  
-`./install.sh` 실행 시 **GitHub / Supabase / Vercel 계정(이메일)** 을 물어보고 `account-map.mdc`에 저장합니다. (비밀번호·API 키는 절대 입력하지 마세요.)
+회사명·개인 이메일·내부 프로젝트명은 **플레이스홀더를 넣지 않습니다**.  
+`./install.sh` 실행 시 **프로바이더 카테고리별 계정(이메일)** 을 물어보고 `account-map.mdc`에 저장합니다. (비밀번호·API 키는 절대 입력하지 마세요.)
 
 | 파일 | 역할 |
 |------|------|
 | [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | Cursor에 바로 넣는 **요약 룰** (`alwaysApply: true`) |
-| [`GOVERNANCE.md`](GOVERNANCE.md) | §0–§42 **전문** (읽기·커스터마이즈용) |
+| [`GOVERNANCE.md`](GOVERNANCE.md) | §0–§44 **전문** (읽기·커스터마이즈용) |
 | [`templates/account-map.example.mdc`](templates/account-map.example.mdc) | 계정 맵 템플릿 (설치 스크립트가 채움) |
 | [`install.sh`](install.sh) | 설치 + **계정 입력 프롬프트** |
 
@@ -29,15 +29,17 @@ chmod +x install.sh
 실행 중 예시:
 
 ```text
-GitHub account/email: you@example.com
-Supabase account/email: you@example.com
-Vercel account/email: you@example.com
+Source control (GitHub/GitLab/Bitbucket): you@example.com
+Hosting/Deploy (Vercel/Netlify/Railway/Render): you@example.com
+Database/BaaS (Supabase/Firebase/PlanetScale/Neon): you@example.com
+Cloud (AWS/GCP/Azure) (Enter to skip):
+CDN/Edge (Cloudflare) (Enter to skip):
 ```
 
 설치 위치:
 
 - `~/.cursor/rules/engineering-governance.mdc`
-- `~/.cursor/rules/account-map.mdc` ← 입력한 메일/계정
+- `~/.cursor/rules/account-map.mdc` ← 입력한 메일/계정 (빈 칸 = 미검증)
 
 ### B. 프로젝트만 (해당 레포에만 적용)
 
@@ -59,7 +61,7 @@ cd /path/to/your-app
 2. 아래 중 하나에 저장  
    - 전역: `~/.cursor/rules/engineering-governance.mdc`  
    - 프로젝트: `<repo>/.cursor/rules/engineering-governance.mdc`  
-3. (선택) `templates/account-map.example.mdc`를 복사해 `YOUR_*` 채우기  
+3. (선택) `templates/account-map.example.mdc`를 복사해 사용하는 프로바이더 행만 채우기  
 4. Cursor를 다시 열거나 **새 Agent 채팅**을 시작
 
 ### D. Cursor Settings UI
@@ -72,22 +74,39 @@ UI 메뉴명은 Cursor 버전에 따라 조금 다를 수 있습니다. 파일�
 
 ---
 
+## 계정 맵 동작 (v1.1)
+
+| 상태 | 의미 |
+|------|------|
+| 값이 있음 | 해당 프로바이더 작업 전 CLI/콘솔 계정과 대조 |
+| **빈 칸** | **미검증** — Agent는 해당 프로바이더를 건드리기 전 사용자에게 확인 |
+| `YOUR_*` 플레이스홀더 | 사용하지 않음 (v1.0 잔여 맵은 직접 수정 권장) |
+
+카테고리: Source control · Hosting/Deploy · Database/BaaS · Cloud(선택) · CDN/Edge(선택)
+
+---
+
 ## 설치 옵션
 
 | 옵션 / 환경변수 | 의미 |
 |-----------------|------|
-| (기본) | 대화형으로 계정 3개 입력 |
+| (기본) | 대화형으로 카테고리별 계정 입력 (Cloud/CDN은 Enter로 건너뛰기) |
 | `--project` | 현재 폴더 `.cursor/rules`에 설치 |
-| `--skip-accounts` | 룰만 설치, 계정 질문 생략 |
-| `--yes` | 질문 없이 env/플레이스홀더로 기록 (CI용) |
-| `GITHUB_ACCOUNT` / `SUPABASE_ACCOUNT` / `VERCEL_ACCOUNT` | 비대화형 값 |
+| `--skip-accounts` | 룰만 설치, 계정 질문 생략 (빈 행 템플릿) |
+| `--yes` | 질문 없이 env 값으로 기록; env 없으면 **빈 칸** (CI용) |
+| `SOURCE_CONTROL_ACCOUNT` | GitHub / GitLab / Bitbucket |
+| `HOSTING_ACCOUNT` | Vercel / Netlify / Railway / Render |
+| `DATABASE_ACCOUNT` | Supabase / Firebase / PlanetScale / Neon |
+| `CLOUD_ACCOUNT` | AWS / GCP / Azure (선택) |
+| `CDN_ACCOUNT` | Cloudflare (선택) |
+| `GITHUB_ACCOUNT` 등 (v1.0) | 하위 호환 — 위 새 변수로 매핑 |
 
 예 (스크립트):
 
 ```bash
-GITHUB_ACCOUNT=dev@example.com \
-SUPABASE_ACCOUNT=dev@example.com \
-VERCEL_ACCOUNT=dev@example.com \
+SOURCE_CONTROL_ACCOUNT=dev@example.com \
+HOSTING_ACCOUNT=dev@example.com \
+DATABASE_ACCOUNT=dev@example.com \
 ./install.sh --yes
 ```
 
@@ -97,9 +116,9 @@ VERCEL_ACCOUNT=dev@example.com \
 
 새 Agent 채팅에서:
 
-> “account-map에 등록된 GitHub / Supabase / Vercel 계정이 뭐야?”
+> “account-map에 등록된 Source control / Hosting / Database 계정이 뭐야?”
 
-입력한 값이 나오면 적용된 것입니다.
+입력한 값이 나오면 적용된 것입니다. 빈 카테고리는 “미검증”으로 안내되어야 합니다.
 
 ---
 
@@ -110,6 +129,16 @@ VERCEL_ACCOUNT=dev@example.com \
 ```
 
 이미 프로젝트에 상세 하네스가 있으면 **그대로 두고**, 이 룰은 공통 안전망으로만 쓰면 됩니다.
+
+---
+
+## v1.1 주요 변경
+
+- 프로바이더 **카테고리형** 계정 맵 (GitHub/Supabase/Vercel 고정 → 5개 카테고리)
+- 빈 계정 = **미검증, 사용자에게 확인** (플레이스홀더 자동 삽입 제거)
+- DB **백업·복구** (§10.1), API **rate limiting·웹훅 검증** (§13.1–13.2)
+- **AI·프롬프트 인젝션** 방어 (§15.1), **비용 가드레일** (§41), **모바일/PWA** (§42)
+- **가짜 완료 금지** 강화 (§43), **최종 판단 규칙** 확장 (§44)
 
 ---
 
@@ -131,9 +160,10 @@ VERCEL_ACCOUNT=dev@example.com \
 
 ## English (short)
 
-1. `./install.sh` — installs rules and **prompts for GitHub / Supabase / Vercel emails**  
+1. `./install.sh` — installs rules and **prompts for provider-category emails**  
 2. `./install.sh --project` — same, into the current repo  
-3. Identity only (no passwords/API keys). Or set `GITHUB_ACCOUNT` etc. with `--yes`  
-4. Restart Cursor / new Agent chat  
+3. Identity only (no passwords/API keys). Blank field = unverified — agent must ask. Set `SOURCE_CONTROL_ACCOUNT` etc. with `--yes`  
+4. Legacy `GITHUB_ACCOUNT` / `SUPABASE_ACCOUNT` / `VERCEL_ACCOUNT` still work  
+5. Restart Cursor / new Agent chat  
 
 Full text: [`GOVERNANCE.md`](GOVERNANCE.md). Compact rule: [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc).
