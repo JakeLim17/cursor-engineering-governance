@@ -1,7 +1,9 @@
 # Cursor Engineering Governance
 
-Cursor용 **글로벌 엔지니어링 거버넌스 v1.1** 룰 템플릿입니다.  
+Cursor용 **글로벌 엔지니어링 거버넌스 v1.3** 룰 템플릿입니다.  
 보안 · 정확성 · 계정 검증 · 시크릿 · 멀티테넌트 · 배포 안전 · AI/웹훅 · 비용 가드레일 등 **제품 요구사항이 아닌** 공통 엔지니어링 규칙을 Agent에 주입합니다.
+
+**동작:** `.cursor/rules/engineering-governance.mdc`는 ‘개발 전 항상 열어 보는 문서’가 아니라 Cursor `alwaysApply: true`로 **매 Agent 채팅에 자동 주입**됩니다. 에이전트는 룰 텍스트에 **없는** 프레임워크 함정(예: Next `"use server"`의 모든 export가 공개 엔드포인트)을 추측하지 말고, **명시된 조항**을 따릅니다. 새 함정이 보이면 이 레포에 조항을 추가하세요.
 
 회사명·개인 이메일·내부 프로젝트명은 **플레이스홀더를 넣지 않습니다**.  
 `./install.sh` 실행 시 **프로바이더 카테고리별 계정(이메일)** 을 물어보고 `account-map.mdc`에 저장합니다. (비밀번호·API 키는 절대 입력하지 마세요.)
@@ -12,8 +14,8 @@ Cursor용 **글로벌 엔지니어링 거버넌스 v1.1** 룰 템플릿입니다
 
 | 파일 | 역할 |
 |------|------|
-| [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | Cursor에 바로 넣는 **요약 룰** (`alwaysApply: true`) |
-| [`GOVERNANCE.md`](GOVERNANCE.md) | §0–§44 **전문** (읽기·커스터마이즈용) |
+| [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | **설치 SSOT** — `install.sh`가 복사하는 요약 룰 (`alwaysApply: true`) |
+| [`GOVERNANCE.md`](GOVERNANCE.md) | 같은 규칙의 §0–§44 **전문** (읽기·커스터마이즈용). 조항 변경 시 **mdc와 함께** 맞춤 |
 | [`templates/account-map.example.mdc`](templates/account-map.example.mdc) | 계정 맵 템플릿 (설치 스크립트가 채움) |
 | [`install.sh`](install.sh) | 설치 + **계정 입력 프롬프트** |
 
@@ -78,7 +80,7 @@ UI 메뉴명은 Cursor 버전에 따라 조금 다를 수 있습니다. 파일�
 
 ---
 
-## 계정 맵 동작 (v1.1)
+## 계정 맵 동작 (v1.1+)
 
 | 상태 | 의미 |
 |------|------|
@@ -116,6 +118,14 @@ DATABASE_ACCOUNT=dev@example.com \
 
 나중에 바꾸려면 `account-map.mdc`를 직접 수정하거나, 설치를 다시 실행하면 됩니다.
 
+이미 설치한 뒤 이 레포를 업데이트했다면, 룰만 덮어쓰려면:
+
+```bash
+./install.sh --skip-accounts
+```
+
+(`account-map.mdc`는 유지되고 `engineering-governance.mdc`만 갱신됩니다.)
+
 ## 설치 후 검증
 
 새 Agent 채팅에서:
@@ -135,6 +145,15 @@ DATABASE_ACCOUNT=dev@example.com \
 이미 프로젝트에 상세 하네스가 있으면 **그대로 두고**, 이 룰은 공통 안전망으로만 쓰면 됩니다.
 
 ---
+
+## v1.3 주요 변경
+
+- **alwaysApply 주입**임을 README·mdc에 명시 — 에이전트는 없는 함정을 추측하지 말고 조항을 따름
+- **서버 호출 가능 export** (§9.1): 핸들러 모듈의 모든 export = 공개 엔드포인트. 헬퍼·토큰 조회·내부 알림 함수를 같은 파일에서 export 금지. OAuth `provider_token` / 세션 시크릿을 액션 응답으로 반환 금지 (Next `"use server"` 예시)
+- **Side-effect mutation** (§13.4): `requireAuth` + actor/owner를 세션과 비교. null이면 **fail closed**
+- **SSRF** (§13.3), **XSS/JSON-LD** (§13.5), **IDOR** (§11 보강), 공개 **쓰기 API** rate limit (§13.1)
+- **CI completeness** (§24.1): unit/build green ≠ 전체 CI green. E2E skip으로 배지 위장 금지
+- Agent NEVER: 범위 밖 리팩터, force push, 푸시된 커밋 amend, `git config --global` 변경
 
 ## v1.1 주요 변경
 
@@ -163,6 +182,8 @@ DATABASE_ACCOUNT=dev@example.com \
 ---
 
 ## English (short)
+
+**How it is applied:** `engineering-governance.mdc` is **injected** into every Agent chat (`alwaysApply`). It is not a “read before coding” doc. Agents follow **written clauses** — they must not invent framework pitfalls that are not in the rule text.
 
 **Key guidance:**
 

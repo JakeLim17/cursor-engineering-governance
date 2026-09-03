@@ -3,9 +3,13 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.1)
+# Global Engineering Governance (1.3)
+
+_1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR, CI completeness, alwaysApply note._
 
 Applies to all Cursor work in this environment. **Not a product requirements doc.**
+
+**How this file works:** it is **injected** into every Agent chat (`alwaysApply: true`). It is not a “read before coding” doc the agent must open. Follow **explicit clauses** here and in the project harness. Do **not** invent framework pitfalls that are not written down — if a gap appears, add a clause to this repo (keep `GOVERNANCE.md` in sync).
 
 If a repo has more specific `AGENTS.md` / `.cursor/rules`, prefer those — but **never** trade away security or correctness for speed.
 
@@ -24,9 +28,12 @@ Do not assume the project is empty or that existing architecture/rules/deps are 
 ## Git & secrets
 
 - No force push, unrelated resets, history rewrites, or secret/`.env` commits without explicit approval
+- Do not `--amend` a commit already on the remote. Do not change `git config --global` to swap author — use per-commit env if a repo requires a specific author
+- No out-of-scope refactors or edits outside the requested files
 - Meaningful, focused commits; inspect diff; run relevant lint/tests before commit
 - Keep `.env.example` with **names only** (no real values). When reporting env: **name + configured/not** — never values
 - Never put server secrets in client code (if unsure, treat as secret)
+- Never log passwords, tokens, API keys, or secrets
 
 ## Accounts & external services
 
@@ -41,10 +48,30 @@ Multi-project: do not reuse the previous chat's provider identity for a differen
 
 Tenant isolation is **server-side**. Never trust client org/tenant/role/ownership.  
 Auth ≠ authorization — verify authorization on every protected action.  
+Every ID-based read/write checks tenant **and** owner/actor on the server (IDOR). **Null session/actor → fail closed** — do not skip. Never treat a client-supplied `userId` / `ownerId` as proof.  
 Validate input against SQLi, XSS, CSRF, SSRF, IDOR, mass assignment, path traversal, unsafe redirects.  
-Rate-limit auth and paid-API endpoints; verify webhook/OAuth callback signatures — reject unverifiable payloads.
+Rate-limit auth, paid-API, **and** unauthenticated/loose **write** endpoints (forms, comments, notifications, uploads).  
+Verify webhook/OAuth callback signatures — reject unverifiable payloads (**fail closed**).
 
 Uploads are untrusted: size, MIME, extension, auth, path. Do not make private storage public for convenience; use signed URLs when needed.
+
+## Server-callable exports (routes / RPC / Server Actions)
+
+A request-handler module exposes **every export** as a network-callable endpoint.
+
+- Export only the intended handlers. Keep helpers, token lookups, and internal `createNotification`-style functions in a **non-exported** module.
+- Never return OAuth `provider_token`, refresh/session secrets, or service-role keys to the client or action response.
+
+Example (Next.js App Router): a `"use server"` file treats **all exports** as public endpoints. Helpers belong in a file **without** `"use server"`.
+
+## Side-effect mutations
+
+Notify / write / delete / pay: `requireAuth` (or equivalent) first, then compare actor/owner to the session. **Null session or actor → fail closed.** Never fire a side effect “best effort” without an authenticated actor. Never trust a client-supplied user/owner id as the actor.
+
+## SSRF · XSS
+
+- User-supplied URL fetch: `http`/`https` only; block private / loopback / link-local / cloud-metadata IPs; **re-check every redirect hop**. Do not fetch first and validate later.
+- XSS: no unsanitized HTML (`dangerouslySetInnerHTML` or equivalent) from user or LLM content; encode user strings in JSON-LD / `<script>`.
 
 ## AI & prompt injection
 
@@ -69,11 +96,25 @@ Flag unbounded retries, unthrottled paid API calls, and runaway cron/storage. No
 Do not silently swallow errors. User errors must not leak secrets/stacks. Never log secrets.  
 Before claiming meaningful work done: lint / typecheck / test / build as applicable. **Do not fake completion** — if a step was not run, say so explicitly; never claim green CI by skipping tests.
 
+## CI completeness — all jobs, not just unit/build
+
+Unit / lint / typecheck / build passing ≠ CI green. **If the pipeline has a separate E2E/Playwright/integration job, that job must pass too** before calling the work done.
+
+UI copy, ARIA/roles, routes, auth guards, or landing/marketing changes: if the repo has Playwright/E2E, run it (or the repo's `ci:local` equivalent) **before push**, not unit tests alone.
+
+E2E red → fix the root cause or update the spec. Never `skip` / `continue-on-error` / disable a job just to turn the badge green.
+
+If E2E was not run, say so explicitly — do not imply “CI is green” from unit/build alone.
+
 ## CI · deploy alerts
 
-Do not leave GitHub Actions / host deploy failures ignored. Prefer fixing root cause over muting alerts. Do not skip tests or disable gates to fake green.
+Do not leave GitHub Actions / host deploy failures ignored — this includes a red job sitting next to green ones. Prefer fixing root cause over muting alerts. Do not skip tests or disable gates to fake green.
 
 Verify source-control account ≠ hosting account when they differ. Connect auto-deploy only after required env (including secrets) is set.
+
+## Agent NEVER
+
+Out-of-scope refactors. Force push / rewrite of pushed history. Fake CI green. Invent security rules that are not written here or in the project harness.
 
 ## When uncertain (§44)
 

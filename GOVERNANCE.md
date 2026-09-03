@@ -1,10 +1,15 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.1
+**Version:** 1.3
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR clauses, CI completeness, alwaysApply note._
+_1.2 (local overlay, now folded in): unit/build green ≠ all CI jobs green._
+
 Applies to: web apps, SaaS, APIs, mobile/PWA, AI apps, internal tools, security products, public-sector systems, experiments.
+
+The compact file `.cursor/rules/engineering-governance.mdc` is what `install.sh` copies. It is **injected** into every Agent chat (`alwaysApply`). Agents must follow **written clauses**, not invent framework-specific pitfalls that are absent from this document. Keep the two files in sync when adding a clause.
 
 ---
 
@@ -85,7 +90,12 @@ Never:
 - overwrite user changes
 - delete branches blindly
 - rewrite unrelated history
+- `--amend` a commit that is already on the remote
 - commit secrets or `.env` files
+- refactor or edit files outside the requested scope
+- change `git config --global` / `--system` to swap author identity
+
+If a repo documents a required commit author (e.g. hosting vendor match), use **per-commit env** (`GIT_AUTHOR_EMAIL` / `GIT_COMMITTER_EMAIL`) only.
 
 Use meaningful, focused commits. Before commit: inspect diff, verify files, run relevant tests / lint / typecheck.
 
@@ -175,6 +185,25 @@ Examples of server-only secrets: database passwords, service-role keys, private 
 
 If uncertain whether a value is safe for the browser: treat it as secret until verified.
 
+### 9.1 Server-callable exports (routes, RPC, Server Actions)
+
+A module that is a public request handler exposes **every export** as a network-callable endpoint.
+
+ALWAYS:
+
+- Export only the handlers meant to be invoked over the network.
+- Authenticate and authorize **inside** each exported handler.
+- Return only data the caller is allowed to see.
+
+NEVER:
+
+- Export internal helpers, token lookups, or side-effect utilities (`createNotification`, admin queries, secret decrypt) from that same module — any client can call every export.
+- Return OAuth `provider_token`, refresh tokens, session secrets, service-role keys, or webhook/signing secrets in the handler response or to client code.
+
+Example (Next.js App Router): a file with `"use server"` treats **all exports** as public endpoints. Put helpers in a module **without** `"use server"`. Do not return `session.provider_token` from an action.
+
+This is framework-neutral: the same rule applies to any RPC/action layer that publishes exports.
+
 ---
 
 ## 10. Database safety
@@ -209,6 +238,9 @@ Never trust from the client: `organization_id`, `tenant_id`, role, ownership cla
 Use authorization, database policies, RLS, and server-side validation.
 Cross-tenant access must be explicitly tested.
 
+ALWAYS: every read / update / delete by resource ID checks tenant **and** owner/actor on the server (IDOR).
+NEVER: skip that check when session or actor is null — **fail closed**. NEVER treat a client-supplied `userId` / `ownerId` as proof of ownership.
+
 ---
 
 ## 12. Authentication vs authorization
@@ -230,14 +262,47 @@ Never rely solely on frontend validation.
 ### 13.1 Rate limiting & abuse prevention
 
 - Apply rate limiting to public-facing endpoints, especially login, signup, password reset, and any endpoint that triggers a paid external API call.
+- Also rate-limit unauthenticated or loosely authenticated **write** endpoints (contact forms, comments, notifications, uploads) that can be used for spam.
 - Guard against brute-force attempts on authentication endpoints (lockout, backoff, or CAPTCHA-style friction).
 - Watch for request patterns that could allow enumeration of valid usernames/emails or resource IDs.
 
 ### 13.2 Webhook & callback verification
 
 - Never trust an incoming webhook or OAuth callback payload without verifying its signature against the provider's documented method.
-- Reject requests with missing, malformed, or unverifiable signatures rather than processing them "just in case."
+- Reject requests with missing, malformed, or unverifiable signatures rather than processing them "just in case." **Fail closed.**
 - Treat webhook payloads as untrusted input subject to the same validation as any other external input.
+
+### 13.3 Outbound URL fetch (SSRF)
+
+When fetching a URL supplied by a user, webhook, crawler target, or untrusted document:
+
+ALWAYS:
+
+- Allow `http` / `https` only.
+- Resolve DNS and **block** private, loopback, link-local, and cloud-metadata addresses.
+- Re-validate the destination on **every redirect hop**.
+
+NEVER: fetch first and validate later. An allowlist is not required for typical SaaS; do not add one unless the product explicitly needs it.
+
+### 13.4 Side-effect mutations
+
+Any action that writes data or triggers a side effect (notification, email, payment, delete, status change):
+
+ALWAYS:
+
+- Authenticate first (`requireAuth` or equivalent).
+- Compare actor / owner with the authenticated session.
+
+NEVER: skip the check when session or actor is null — **fail closed**. NEVER fire a notification or mutation "best effort" without an authenticated actor. NEVER trust a client-supplied `userId` / `ownerId` as the actor.
+
+### 13.5 HTML / XSS
+
+NEVER:
+
+- Inject unsanitized HTML (`dangerouslySetInnerHTML` or equivalent) from user or LLM content.
+- Embed raw user strings inside `<script>`, JSON-LD, or markdown-to-HTML without encoding / sanitization.
+
+If HTML injection is unavoidable, sanitize with a maintained library and a tight allowlist.
 
 ---
 
@@ -352,6 +417,16 @@ If a verification step cannot be run in the current environment, say so explicit
 Where CI/CD exists, typical pipeline: install → lint → typecheck → test → build.
 
 Do not deploy broken builds. Prefer development → preview → production environment separation.
+
+### 24.1 CI completeness — all jobs, not just unit/build
+
+Unit / lint / typecheck / build passing **≠** CI green.
+
+- If the pipeline has a separate E2E / Playwright / integration job, **that job must pass too** before calling the work done.
+- UI copy, ARIA/roles, routes, auth guards, or landing/marketing changes: if the repo has Playwright/E2E, run it (or the repo's `ci:local` equivalent) **before push**, not unit tests alone.
+- E2E red → fix the root cause or update the spec to match the intended UX.
+- NEVER `skip` / `continue-on-error` / disable a job just to turn the badge green.
+- If E2E was not run, say so explicitly — do not imply "CI is green" from unit/build alone.
 
 ---
 
@@ -514,7 +589,7 @@ Where the project targets mobile or PWA:
 
 ## 43. No fake completion
 
-Never: fake API responses in production; claim integration/deploy/auth/RLS/AI grounding works without testing; hide errors; disable tests to look successful; claim a verification step passed when it was not actually run.
+Never: fake API responses in production; claim integration/deploy/auth/RLS/AI grounding works without testing; hide errors; disable tests to look successful; claim a verification step passed when it was not actually run; claim CI is green when any required job (including E2E) was skipped, muted, or failed.
 
 ---
 
