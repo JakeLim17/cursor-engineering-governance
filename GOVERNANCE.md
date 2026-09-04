@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.4
+**Version:** 1.5
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
 _1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
 _1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR clauses, CI completeness, alwaysApply note._
 _1.2 (local overlay, now folded in): unit/build green ≠ all CI jobs green._
@@ -611,6 +612,27 @@ When something fails: **FIX THE ROOT CAUSE.**
 When an existing solution already works: **PREFER IMPROVEMENT OVER REWRITE.**
 When a project-specific rule exists: **FOLLOW THE PROJECT RULE** unless it violates security or higher-level requirements.
 When a verification step could not be run: **SAY SO EXPLICITLY**, never imply success.
+
+---
+
+## 46. Daily governance maintenance (once per day)
+
+This repo is a living document, not a one-time install. It must keep improving from real work, not just be installed once and forgotten.
+
+ALWAYS:
+
+- At least once per day of active Cursor work, or when a meaningful work session wraps up, review what that day's work actually surfaced and fold any genuine gap into this file as a short, explicit clause (one to a few lines) - not a long essay.
+- Typical triggers: a security incident or audit finding, an AI-tell copy pattern (e.g. long dashes, telltale phrasing), a framework footgun discovered mid-task (e.g. a Next.js export-exposure surprise), or a "why didn't the rule catch this?" conversation.
+- Update `GOVERNANCE.md` and `.cursor/rules/engineering-governance.mdc` together in the same edit; keep them in sync.
+- After editing, run `./install.sh --skip-accounts` to refresh installed copies, then commit and push **this governance repo only** (not the app repo where the gap was found).
+- Bump the version number and add one changelog line per meaningful update.
+
+NEVER:
+
+- Long essays or speculative rules not grounded in something that actually happened that day.
+- Duplicate a clause that already exists elsewhere in this file.
+- Paste this repo's full rule text into an app repo - app repos install/link to this repo; they do not become a copy of the source of truth.
+- Skip a day's update just because the finding felt small - a one-line clause is enough.
 
 ---
 

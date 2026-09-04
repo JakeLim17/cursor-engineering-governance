@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.4)
+# Global Engineering Governance (1.5)
 
+_1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
 _1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
 _1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR, CI completeness, alwaysApply note._
 
@@ -116,6 +117,12 @@ Verify source-control account ≠ hosting account when they differ. Connect auto
 ## Text formatting - dashes
 
 NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, docs, chat responses, or code comments. ALWAYS use plain ASCII hyphen-minus (`-`), including for ranges like `2020-2024`.
+
+## Daily governance maintenance (section 46)
+
+This repo is a living document. Once per day of real Cursor work (or at end-of-day wrap-up), fold any genuine gap that day's work surfaced into a short, explicit clause here + `GOVERNANCE.md` - triggers: security/audit findings, AI-tell copy patterns (long dashes, etc.), framework footguns, or a "why didn't the rule catch this?" moment. Update both files together, run `./install.sh --skip-accounts`, then commit + push **this governance repo only**.
+
+NEVER: long essays, duplicate an existing clause, or paste this repo's full rule text into an app repo (app repos install/link, they don't become the source of truth).
 
 ## Agent NEVER
 
