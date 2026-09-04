@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.5
+**Version:** 1.6
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
 _1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
 _1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
 _1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR clauses, CI completeness, alwaysApply note._
@@ -205,6 +206,18 @@ NEVER:
 Example (Next.js App Router): a file with `"use server"` treats **all exports** as public endpoints. Put helpers in a module **without** `"use server"`. Do not return `session.provider_token` from an action.
 
 This is framework-neutral: the same rule applies to any RPC/action layer that publishes exports.
+
+### 9.2 Mutation UI refresh (Next.js App Router)
+
+In server actions, `revalidatePath` alone may not refresh the view the user is currently looking at (especially Next.js 15). If a list or detail page is server-rendered only, users may need a manual refresh to see new or updated content.
+
+ALWAYS:
+
+- After a mutation, have the client immediately reflect the change via the action's return value (returned or optimistic data), or call `router.refresh()` (or equivalent) so the current view updates.
+
+NEVER:
+
+- Assume `revalidatePath` alone means the UI updates immediately on the screen the user is viewing.
 
 ---
 

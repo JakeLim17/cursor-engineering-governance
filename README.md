@@ -1,6 +1,6 @@
 # Cursor Engineering Governance
 
-Cursor용 **글로벌 엔지니어링 거버넌스 v1.5** 룰 템플릿입니다.  
+Cursor용 **글로벌 엔지니어링 거버넌스 v1.6** 룰 템플릿입니다.  
 보안 · 정확성 · 계정 검증 · 시크릿 · 멀티테넌트 · 배포 안전 · AI/웹훅 · 비용 가드레일 등 **제품 요구사항이 아닌** 공통 엔지니어링 규칙을 Agent에 주입합니다.
 
 **동작:** `.cursor/rules/engineering-governance.mdc`는 ‘개발 전 항상 열어 보는 문서’가 아니라 Cursor `alwaysApply: true`로 **매 Agent 채팅에 자동 주입**됩니다. 에이전트는 룰 텍스트에 **없는** 프레임워크 함정(예: Next `"use server"`의 모든 export가 공개 엔드포인트)을 추측하지 말고, **명시된 조항**을 따릅니다. 새 함정이 보이면 이 레포에 조항을 추가하세요.
@@ -147,6 +147,10 @@ DATABASE_ACCOUNT=dev@example.com \
 이미 프로젝트에 상세 하네스가 있으면 **그대로 두고**, 이 룰은 공통 안전망으로만 쓰면 됩니다.
 
 ---
+
+## v1.6 주요 변경
+
+- **Mutation UI refresh** (§9.2): Next.js App Router 서버 액션에서 `revalidatePath`만으로는 현재 화면이 갱신되지 않을 수 있음 (특히 Next 15). mutation 후 액션 반환값으로 즉시 UI 반영 또는 `router.refresh()` 등 현재 뷰 갱신 경로 필수. `revalidatePath`만으로 즉시 반영된다고 가정 금지
 
 ## v1.5 주요 변경
 

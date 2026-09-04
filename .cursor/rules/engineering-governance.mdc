@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.5)
+# Global Engineering Governance (1.6)
 
+_1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
 _1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
 _1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
 _1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR, CI completeness, alwaysApply note._
@@ -65,6 +66,14 @@ A request-handler module exposes **every export** as a network-callable endpoint
 - Never return OAuth `provider_token`, refresh/session secrets, or service-role keys to the client or action response.
 
 Example (Next.js App Router): a `"use server"` file treats **all exports** as public endpoints. Helpers belong in a file **without** `"use server"`.
+
+## Mutation UI refresh (Next.js App Router)
+
+`revalidatePath` in a server action may not refresh the view the user is currently on (especially Next.js 15). Server-rendered lists may stay stale until manual refresh.
+
+ALWAYS: after a mutation, update the client immediately from the action return value, or call `router.refresh()` (or equivalent).
+
+NEVER: assume `revalidatePath` alone means the current screen updates right away.
 
 ## Side-effect mutations
 
