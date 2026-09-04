@@ -51,7 +51,8 @@ for __gov_arg in "$@"; do
       [[ "$__a" == "--from-remote" ]] || __gov_rest+=("$__a")
     done
     echo "==> re-exec: $GOV_LOCAL_DIR/install.sh ${__gov_rest[*]:-}"
-    exec bash "$GOV_LOCAL_DIR/install.sh" "${__gov_rest[@]}"
+    # set -u: empty __gov_rest must not expand as unbound "${__gov_rest[@]}"
+    exec bash "$GOV_LOCAL_DIR/install.sh" "${__gov_rest[@]+"${__gov_rest[@]}"}"
   fi
 done
 
