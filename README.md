@@ -19,9 +19,23 @@ Cursor용 **글로벌 엔지니어링 거버넌스 v1.6** 룰 템플릿입니다
 | [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | **설치 SSOT** — `install.sh`가 복사하는 요약 룰 (`alwaysApply: true`) |
 | [`GOVERNANCE.md`](GOVERNANCE.md) | 같은 규칙의 §0-§45 **전문** (읽기·커스터마이즈용). 조항 변경 시 **mdc와 함께** 맞춤 |
 | [`templates/account-map.example.mdc`](templates/account-map.example.mdc) | 계정 맵 템플릿 (설치 스크립트가 채움) |
-| [`install.sh`](install.sh) | 설치 + **계정 입력 프롬프트** |
+| [`install.sh`](install.sh) | 설치 + **계정 입력 프롬프트** (+ `--from-remote` 원커맨드) |
+| [`docs/SHARE.md`](docs/SHARE.md) | **팀 전파 SSOT** — 다른 개발자 머신에 이 레포 + `compass-mcp` 같이 심는 절차 |
 
 ---
+
+## Share — 팀원에게 전파 (v1.7+)
+
+**클론 없이 원커맨드**로 설치할 수 있다 (스크립트가 대신 클론/pull):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/JakeLim17/cursor-engineering-governance/main/install.sh \
+  | bash -s -- --from-remote
+```
+
+`~/.cursor-engineering-governance`(또는 `GOV_LOCAL_DIR` env)에 클론(이미 있으면 fast-forward pull) 후 실제 `install.sh`를 그 클론에서 재실행한다. `--from-remote` 뒤에 오는 다른 플래그(`--project`, `--yes`, `--skip-accounts` 등)는 그대로 전달된다.
+
+**`compass-mcp`(모델 라우팅 MCP)까지 같이 심는 전체 절차**는 [`docs/SHARE.md`](docs/SHARE.md) 참고 — 새 머신 온보딩 3~5줄, 업데이트만 할 때 절차, 검토한 자동화 옵션까지 정리되어 있다.
 
 ## 적용 방법 (권장 순서)
 
@@ -147,6 +161,13 @@ DATABASE_ACCOUNT=dev@example.com \
 이미 프로젝트에 상세 하네스가 있으면 **그대로 두고**, 이 룰은 공통 안전망으로만 쓰면 됩니다.
 
 ---
+
+## 설치·공유 도구 업데이트 (2026-09-04)
+
+규칙 본문(GOVERNANCE.md 조항 버전)과는 별도 트랙 — install.sh/문서만 변경, 조항 버전 안 올림:
+
+- **`install.sh --from-remote`**: 클론 없이 `curl -fsSL .../install.sh | bash -s -- --from-remote`로 원커맨드 설치 — 스크립트가 `~/.cursor-engineering-governance`(또는 `GOV_LOCAL_DIR`)에 직접 클론/pull 후 재실행
+- **`docs/SHARE.md`**: 팀 전파 SSOT — `compass-mcp`(모델 라우팅 MCP)까지 함께 심는 절차 + 검토한 자동화 옵션(submodule/Cursor Team Rules/GitHub Action 비교) 정리
 
 ## v1.6 주요 변경
 

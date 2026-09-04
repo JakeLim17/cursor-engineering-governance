@@ -19,8 +19,41 @@
 #   CLOUD_ACCOUNT, CDN_ACCOUNT
 # Backward compat (v1.0): GITHUB_ACCOUNT → SOURCE_CONTROL_ACCOUNT,
 #   VERCEL_ACCOUNT → HOSTING_ACCOUNT, SUPABASE_ACCOUNT → DATABASE_ACCOUNT
+#
+# One-command remote install (v1.7+, no manual git clone first) — teammate has
+# never cloned this repo yet:
+#   curl -fsSL https://raw.githubusercontent.com/JakeLim17/cursor-engineering-governance/main/install.sh \
+#     | bash -s -- --from-remote
+#   # forwards remaining flags, e.g.:
+#   curl -fsSL .../install.sh | bash -s -- --from-remote --project
+# --from-remote clones (or fast-forward pulls if already cloned) into
+#   ${GOV_LOCAL_DIR:-~/.cursor-engineering-governance} then re-execs the real
+#   install.sh from that clone with every other flag forwarded unchanged.
+# Override clone location: GOV_LOCAL_DIR=/some/path ; override source: GOV_REPO_URL=...
 
 set -euo pipefail
+
+# --from-remote bootstrap — must run before we assume $0 lives inside a real
+# checkout (true when this file is piped straight from `curl | bash`).
+for __gov_arg in "$@"; do
+  if [[ "$__gov_arg" == "--from-remote" ]]; then
+    GOV_REPO_URL="${GOV_REPO_URL:-https://github.com/JakeLim17/cursor-engineering-governance.git}"
+    GOV_LOCAL_DIR="${GOV_LOCAL_DIR:-$HOME/.cursor-engineering-governance}"
+    if [[ -d "$GOV_LOCAL_DIR/.git" ]]; then
+      echo "==> updating existing clone: $GOV_LOCAL_DIR"
+      git -C "$GOV_LOCAL_DIR" pull --ff-only
+    else
+      echo "==> cloning $GOV_REPO_URL -> $GOV_LOCAL_DIR"
+      git clone --depth 1 "$GOV_REPO_URL" "$GOV_LOCAL_DIR"
+    fi
+    __gov_rest=()
+    for __a in "$@"; do
+      [[ "$__a" == "--from-remote" ]] || __gov_rest+=("$__a")
+    done
+    echo "==> re-exec: $GOV_LOCAL_DIR/install.sh ${__gov_rest[*]:-}"
+    exec bash "$GOV_LOCAL_DIR/install.sh" "${__gov_rest[@]}"
+  fi
+done
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 SRC_RULE="$ROOT/.cursor/rules/engineering-governance.mdc"
@@ -32,7 +65,7 @@ DEST=""
 MODE="global"
 
 usage() {
-  sed -n '2,22p' "$0"
+  sed -n '2,32p' "$0"
 }
 
 prompt_value() {
