@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.3
+**Version:** 1.4
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
 _1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR clauses, CI completeness, alwaysApply note._
 _1.2 (local overlay, now folded in): unit/build green ≠ all CI jobs green._
 
@@ -593,7 +594,14 @@ Never: fake API responses in production; claim integration/deploy/auth/RLS/AI gr
 
 ---
 
-## 44. Final decision rule
+## 44. Text formatting - dashes
+
+NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, documentation, chat responses, or code comments.
+ALWAYS use the plain ASCII hyphen-minus (`-`, U+002D) instead, including for ranges (e.g. `2020-2024`) and parenthetical breaks.
+
+---
+
+## 45. Final decision rule
 
 When uncertain: **INSPECT FIRST.**
 When security-sensitive: **VERIFY.**

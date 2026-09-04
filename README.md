@@ -1,6 +1,6 @@
 # Cursor Engineering Governance
 
-Cursor용 **글로벌 엔지니어링 거버넌스 v1.3** 룰 템플릿입니다.  
+Cursor용 **글로벌 엔지니어링 거버넌스 v1.4** 룰 템플릿입니다.  
 보안 · 정확성 · 계정 검증 · 시크릿 · 멀티테넌트 · 배포 안전 · AI/웹훅 · 비용 가드레일 등 **제품 요구사항이 아닌** 공통 엔지니어링 규칙을 Agent에 주입합니다.
 
 **동작:** `.cursor/rules/engineering-governance.mdc`는 ‘개발 전 항상 열어 보는 문서’가 아니라 Cursor `alwaysApply: true`로 **매 Agent 채팅에 자동 주입**됩니다. 에이전트는 룰 텍스트에 **없는** 프레임워크 함정(예: Next `"use server"`의 모든 export가 공개 엔드포인트)을 추측하지 말고, **명시된 조항**을 따릅니다. 새 함정이 보이면 이 레포에 조항을 추가하세요.
@@ -15,7 +15,7 @@ Cursor용 **글로벌 엔지니어링 거버넌스 v1.3** 룰 템플릿입니다
 | 파일 | 역할 |
 |------|------|
 | [`.cursor/rules/engineering-governance.mdc`](.cursor/rules/engineering-governance.mdc) | **설치 SSOT** — `install.sh`가 복사하는 요약 룰 (`alwaysApply: true`) |
-| [`GOVERNANCE.md`](GOVERNANCE.md) | 같은 규칙의 §0–§44 **전문** (읽기·커스터마이즈용). 조항 변경 시 **mdc와 함께** 맞춤 |
+| [`GOVERNANCE.md`](GOVERNANCE.md) | 같은 규칙의 §0-§45 **전문** (읽기·커스터마이즈용). 조항 변경 시 **mdc와 함께** 맞춤 |
 | [`templates/account-map.example.mdc`](templates/account-map.example.mdc) | 계정 맵 템플릿 (설치 스크립트가 채움) |
 | [`install.sh`](install.sh) | 설치 + **계정 입력 프롬프트** |
 
@@ -146,6 +146,10 @@ DATABASE_ACCOUNT=dev@example.com \
 
 ---
 
+## v1.4 주요 변경
+
+- **긴 대시 금지** (§44): UI 카피·커밋 메시지·문서·채팅 응답·코드 주석에서 en dash(U+2013)·em dash(U+2014)·전각 대시 금지, ASCII 하이픈 `-`만 사용 (범위 표기도 `2020-2024`처럼)
+
 ## v1.3 주요 변경
 
 - **alwaysApply 주입**임을 README·mdc에 명시 — 에이전트는 없는 함정을 추측하지 말고 조항을 따름
@@ -161,7 +165,7 @@ DATABASE_ACCOUNT=dev@example.com \
 - 빈 계정 = **미검증, 사용자에게 확인** (플레이스홀더 자동 삽입 제거)
 - DB **백업·복구** (§10.1), API **rate limiting·웹훅 검증** (§13.1–13.2)
 - **AI·프롬프트 인젝션** 방어 (§15.1), **비용 가드레일** (§41), **모바일/PWA** (§42)
-- **가짜 완료 금지** 강화 (§43), **최종 판단 규칙** 확장 (§44)
+- **가짜 완료 금지** 강화 (§43), **최종 판단 규칙** 확장 (§45)
 
 ---
 

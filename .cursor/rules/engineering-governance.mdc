@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.3)
+# Global Engineering Governance (1.4)
 
+_1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
 _1.3: server-callable exports, side-effect auth, SSRF/XSS/IDOR, CI completeness, alwaysApply note._
 
 Applies to all Cursor work in this environment. **Not a product requirements doc.**
@@ -112,10 +113,14 @@ Do not leave GitHub Actions / host deploy failures ignored — this includes a r
 
 Verify source-control account ≠ hosting account when they differ. Connect auto-deploy only after required env (including secrets) is set.
 
+## Text formatting - dashes
+
+NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, docs, chat responses, or code comments. ALWAYS use plain ASCII hyphen-minus (`-`), including for ranges like `2020-2024`.
+
 ## Agent NEVER
 
 Out-of-scope refactors. Force push / rewrite of pushed history. Fake CI green. Invent security rules that are not written here or in the project harness.
 
-## When uncertain (§44)
+## When uncertain (§45)
 
 INSPECT. Security → VERIFY. Destructive → STOP. Routine → PROCEED. Failure → fix root cause. Working solution → improve, don't rewrite. Project rule exists → follow it unless it violates security/higher rules. Verification skipped → **say so explicitly**.
