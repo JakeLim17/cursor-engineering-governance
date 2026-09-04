@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.6)
+# Global Engineering Governance (1.7)
 
+_1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy._
 _1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
 _1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
 _1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
@@ -126,6 +127,8 @@ Verify source-control account ≠ hosting account when they differ. Connect auto
 ## Text formatting - dashes
 
 NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, docs, chat responses, or code comments. ALWAYS use plain ASCII hyphen-minus (`-`), including for ranges like `2020-2024`.
+
+NEVER replace dash characters inside regex character classes, Unicode escapes (`\u2013` etc.), or code that **detects/strips** typographic dashes (matching/detection logic itself) - that breaks the pattern. Also skip binary files, lockfiles, generated assets. ONLY replace in human-facing copy: UI/i18n strings, markdown prose, plain-text comments. Unsure whether a dash is functional or cosmetic -> leave it and flag it.
 
 ## Daily governance maintenance (section 46)
 

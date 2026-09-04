@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.6
+**Version:** 1.7
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy (§44)._
 _1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
 _1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
 _1.4: ASCII hyphen-minus only in copy/commits/docs/chat/comments - no en/em/full-width dash._
@@ -612,6 +613,10 @@ Never: fake API responses in production; claim integration/deploy/auth/RLS/AI gr
 
 NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, documentation, chat responses, or code comments.
 ALWAYS use the plain ASCII hyphen-minus (`-`, U+002D) instead, including for ranges (e.g. `2020-2024`) and parenthetical breaks.
+
+NEVER apply this replacement inside regex character classes, Unicode escapes (e.g. `\u2013`, `\u2014`), or any code whose job is to **detect or strip** typographic dashes (matching/detection logic) - changing those characters breaks the pattern itself. Also NEVER touch binary files, lockfiles, or generated assets while doing a dash cleanup pass.
+ONLY replace dash characters in human-facing copy: UI strings, i18n message files, markdown prose, and comments that are plain text (not part of a pattern literal).
+If it is unclear whether a given dash is functional (part of detection/matching logic) or cosmetic (human-facing copy) - leave it unchanged and flag it instead of guessing.
 
 ---
 
