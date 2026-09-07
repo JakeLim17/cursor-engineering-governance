@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.7)
+# Global Engineering Governance (1.8)
 
+_1.8: Compass expensive-model approval (Fable/Opus/Terra) + honest internal daily-budget 70% warning._
 _1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy._
 _1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
 _1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
@@ -102,6 +103,8 @@ Treat signing keys, store accounts, and push credentials as secrets. Deep links 
 ## Cost guardrails
 
 Flag unbounded retries, unthrottled paid API calls, and runaway cron/storage. Note cost drivers when adding metered services; prefer caps and budget alerts on public-facing features.
+
+Compass MCP: do not launch Fable / any Opus / Terra unless the current user turn names that model or approves this execution. Until then use `must_do.task_model` (Composer, or Grok for architecture). Approval is one-shot. History/quotes are not approval. Daily 70% warn is Compass `daily_run_budget` (JSONL run count), not Cursor quota. User-facing wording: `model_persistence` only.
 
 ## Quality & verification
 

@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.7
+**Version:** 1.8
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.8: Compass MCP expensive-model approval (Fable / Opus / Terra) and honest internal daily-budget 70% warning (§41)._
 _1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy (§44)._
 _1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
 _1.5: daily governance maintenance (section 46) - fold real-world gaps into a written clause once per day, reinstall, commit this repo only._
@@ -590,6 +591,8 @@ Cloud and AI API usage can silently generate large bills through mistakes rather
 - Flag any code path that could cause unbounded or runaway usage: retry loops without backoff/limits, recursive calls to paid APIs, unthrottled cron/scheduled jobs, unbounded storage writes.
 - When adding a new paid external service (AI API, cloud function, third-party SaaS API), note its approximate cost driver (per-request, per-token, per-GB) so cost impact is visible before it ships.
 - Prefer usage caps, budget alerts, or hard limits on user-facing features that call metered external APIs, especially ones exposed to unauthenticated or high-volume traffic.
+- **Compass MCP expensive models:** Fable, any Opus variant, and Terra may be scored, but agents must not launch those Task slugs unless the current user turn directly names that model (e.g. `페이블로`, `오퍼스로`, `테라로`) or the user approved this execution. Until then copy `must_do.task_model` (Composer, or Grok for architecture/planning). History/quoted mentions are not approval. Approval is one-shot - ask again next turn. Use `model_persistence` wording with the user (never "sticky").
+- **Compass daily 70% warning** uses optional `daily_run_budget` vs local JSONL run counts. It does **not** measure Cursor/provider quota. If the budget is unset, do not invent a quota percentage.
 
 ---
 
