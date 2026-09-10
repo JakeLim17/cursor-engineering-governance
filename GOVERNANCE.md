@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.8
+**Version:** 1.9
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only (§4.1)._
 _1.8: Compass MCP expensive-model approval (Fable / Opus / Terra) and honest internal daily-budget 70% warning (§41)._
 _1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy (§44)._
 _1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
@@ -103,6 +104,30 @@ Never:
 If a repo documents a required commit author (e.g. hosting vendor match), use **per-commit env** (`GIT_AUTHOR_EMAIL` / `GIT_COMMITTER_EMAIL`) only.
 
 Use meaningful, focused commits. Before commit: inspect diff, verify files, run relevant tests / lint / typecheck.
+
+### 4.1 Commit phrasing (Korean)
+
+When the user uses Korean phrasing for git operations:
+
+| User phrase | Action |
+|---|---|
+| **「커밋해」** | `git commit` **then** push to `origin` (branch name follows the repo's policy) |
+| **「커밋만 해」「커밋만해」「커밋까지」** | Commit only. **Do not push.** |
+| **「푸시해」** | Local commit exists → push only. No commit → ask whether commit+push or push-only |
+
+**ALWAYS:**
+
+- Without explicit request, do **neither** commit nor push. Leave changes in the working tree and report.
+- Subagents / delegated tasks: do not instruct commit or push unless the user requested it in **that** turn.
+- If a repo has more specific commit/push rules (branch policy, build gates, author override), **follow the repo rule**.
+
+**NEVER** (unless the user explicitly requests):
+
+- `git push --force` / `--force-with-lease`
+- `git commit --amend` (especially on commits already on the remote)
+- `--no-verify`
+
+A previous turn's commit instruction does **not** carry over to follow-up messages.
 
 ---
 

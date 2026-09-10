@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.8)
+# Global Engineering Governance (1.9)
 
+_1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only._
 _1.8: Compass expensive-model approval (Fable/Opus/Terra) + honest internal daily-budget 70% warning._
 _1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy._
 _1.6: Next.js App Router - revalidatePath alone may not refresh the current view; mutation must also update client UI or router.refresh()._
@@ -39,6 +40,18 @@ Do not assume the project is empty or that existing architecture/rules/deps are 
 - Keep `.env.example` with **names only** (no real values). When reporting env: **name + configured/not** — never values
 - Never put server secrets in client code (if unsure, treat as secret)
 - Never log passwords, tokens, API keys, or secrets
+
+### Commit phrasing (Korean)
+
+| Phrase | Action |
+|---|---|
+| **「커밋해」** | `git commit` **then** `origin` push (branch per repo policy) |
+| **「커밋만 해」「커밋만해」「커밋까지」** | Commit only. **No push.** |
+| **「푸시해」** | Commit exists → push only. No commit → ask user |
+
+ALWAYS: No explicit request → no commit, no push. Repo-specific commit/push rules override this summary. Subagents: no commit/push unless requested in that turn.
+
+NEVER (default): force push, `--no-verify`, amend on remote. Prior turn's commit request does not auto-apply to follow-ups.
 
 ## Accounts & external services
 
