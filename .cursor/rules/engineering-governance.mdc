@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.9)
+# Global Engineering Governance (1.10)
 
+_1.10: Split workers + numbered report together; Korean copy anti-translationese and `--` long-dash lookalike._
 _1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only._
 _1.8: Compass expensive-model approval (Fable/Opus/Terra) + honest internal daily-budget 70% warning._
 _1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy._
@@ -140,17 +141,23 @@ Do not leave GitHub Actions / host deploy failures ignored — this includes a r
 
 Verify source-control account ≠ hosting account when they differ. Connect auto-deploy only after required env (including secrets) is set.
 
-## Text formatting - dashes
+## Text formatting - dashes and Korean copy
 
-NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, docs, chat responses, or code comments. ALWAYS use plain ASCII hyphen-minus (`-`), including for ranges like `2020-2024`.
+NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, docs, chat responses, or code comments. NEVER use `--` as a sentence break or parenthetical (long-dash lookalike); CLI flags and code that require `--` are fine. ALWAYS use plain ASCII hyphen-minus (`-`), including for ranges like `2020-2024`.
 
 NEVER replace dash characters inside regex character classes, Unicode escapes (`\u2013` etc.), or code that **detects/strips** typographic dashes (matching/detection logic itself) - that breaks the pattern. Also skip binary files, lockfiles, generated assets. ONLY replace in human-facing copy: UI/i18n strings, markdown prose, plain-text comments. Unsure whether a dash is functional or cosmetic -> leave it and flag it.
+
+Korean UI / chat / commit copy: short Korean a person would say. NEVER translationese: `결/흐름`, `흐름` as a calque of "flow" in product UX, EN/KO slash glue (`A/B` abuse), or 「~를 통해 ~를 수행합니다」. Fix awkward AI copy before it ships.
 
 ## Daily governance maintenance (section 46)
 
 This repo is a living document. Once per day of real Cursor work (or at end-of-day wrap-up), fold any genuine gap that day's work surfaced into a short, explicit clause here + `GOVERNANCE.md` - triggers: security/audit findings, AI-tell copy patterns (long dashes, etc.), framework footguns, or a "why didn't the rule catch this?" moment. Update both files together, run `./install.sh --skip-accounts`, then commit + push **this governance repo only**.
 
 NEVER: long essays, duplicate an existing clause, or paste this repo's full rule text into an app repo (app repos install/link, they don't become the source of truth).
+
+## Split workers for multi-branch requests (§47)
+
+When a request has **multiple independent branches** (e.g. modal motion vs mobile overflow vs event times - do not mix): split into distinct workers (or isolated sequential passes). Report in chat as **1, 2, 3** in **one** bundled message after **all** finish. If one finishes first, wait - do not drip a partial numbered report. Does not override §32 (no parallel agents for a single focused task).
 
 ## Agent NEVER
 

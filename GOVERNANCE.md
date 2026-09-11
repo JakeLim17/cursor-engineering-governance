@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.9
+**Version:** 1.10
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.10: Split workers for multi-branch requests + numbered report together (§47); Korean copy anti-translationese and `--` long-dash lookalike (§44)._
 _1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only (§4.1)._
 _1.8: Compass MCP expensive-model approval (Fable / Opus / Terra) and honest internal daily-budget 70% warning (§41)._
 _1.7: dash cleanup guardrail - never touch regex/detection logic or Unicode escapes when replacing en/em dashes; only replace in human-facing copy (§44)._
@@ -637,14 +638,17 @@ Never: fake API responses in production; claim integration/deploy/auth/RLS/AI gr
 
 ---
 
-## 44. Text formatting - dashes
+## 44. Text formatting - dashes and Korean copy
 
 NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash in UI copy, commit messages, documentation, chat responses, or code comments.
+NEVER use `--` as a sentence break or parenthetical (the long-dash lookalike). CLI flags and code that require `--` are fine.
 ALWAYS use the plain ASCII hyphen-minus (`-`, U+002D) instead, including for ranges (e.g. `2020-2024`) and parenthetical breaks.
 
 NEVER apply this replacement inside regex character classes, Unicode escapes (e.g. `\u2013`, `\u2014`), or any code whose job is to **detect or strip** typographic dashes (matching/detection logic) - changing those characters breaks the pattern itself. Also NEVER touch binary files, lockfiles, or generated assets while doing a dash cleanup pass.
 ONLY replace dash characters in human-facing copy: UI strings, i18n message files, markdown prose, and comments that are plain text (not part of a pattern literal).
 If it is unclear whether a given dash is functional (part of detection/matching logic) or cosmetic (human-facing copy) - leave it unchanged and flag it instead of guessing.
+
+Korean UI / chat / commit copy: write short Korean a person would actually say. NEVER leave translationese: `결/흐름`, overusing `흐름` as a calque of English "flow" in product UX, gluing EN/KO with slashes (`A/B` abuse), or 「~를 통해 ~를 수행합니다」-style phrasing. Fix awkward AI copy before it ships.
 
 ---
 
@@ -679,6 +683,22 @@ NEVER:
 - Duplicate a clause that already exists elsewhere in this file.
 - Paste this repo's full rule text into an app repo - app repos install/link to this repo; they do not become a copy of the source of truth.
 - Skip a day's update just because the finding felt small - a one-line clause is enough.
+
+---
+
+## 47. Split workers for multi-branch requests
+
+When a user request has **multiple independent branches** (e.g. modal motion vs mobile overflow vs event times - do not mix them in one worker):
+
+ALWAYS:
+
+- Split into distinct workers (or isolated sequential passes). One worker = one branch.
+- Report in chat as **1, 2, 3** in a **single** bundled message after all branches finish.
+- If one finishes first, wait. Do not drip a partial numbered report.
+
+NEVER: blend unrelated branches in one worker. NEVER post "1. done" while 2 and 3 are still running.
+
+This does not override §32: do not spawn parallel agents for a single focused task.
 
 ---
 
