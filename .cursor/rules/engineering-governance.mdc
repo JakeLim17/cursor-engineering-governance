@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.10)
+# Global Engineering Governance (1.11)
 
+_1.11: After meaningful work, next action is one item only; extra screen ideas only on screenshot._
 _1.10: Split workers + numbered report together; Korean copy anti-translationese and `--` long-dash lookalike._
 _1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only._
 _1.8: Compass expensive-model approval (Fable/Opus/Terra) + honest internal daily-budget 70% warning._
@@ -158,6 +159,10 @@ NEVER: long essays, duplicate an existing clause, or paste this repo's full rule
 ## Split workers for multi-branch requests (§47)
 
 When a request has **multiple independent branches** (e.g. modal motion vs mobile overflow vs event times - do not mix): split into distinct workers (or isolated sequential passes). Report in chat as **1, 2, 3** in **one** bundled message after **all** finish. If one finishes first, wait - do not drip a partial numbered report. Does not override §32 (no parallel agents for a single focused task).
+
+## Next action after meaningful work (§48)
+
+After meaningful work (speed, permission, invite included): **one** next action, one line (or 「없음」). Do not append 2-4 unsolicited UX/product ideas. Screenshot from the user: a short extra on that screen only - still not a 2-4 list. Supersedes the 2-4 UX dump habit; do not duplicate that essay here.
 
 ## Agent NEVER
 

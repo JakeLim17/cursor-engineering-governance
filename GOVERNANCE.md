@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.10
+**Version:** 1.11
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.11: After meaningful work, next action is one item only; no unsolicited 2-4 UX lists. Extra screen ideas only when the user sent a screenshot (§48)._
 _1.10: Split workers for multi-branch requests + numbered report together (§47); Korean copy anti-translationese and `--` long-dash lookalike (§44)._
 _1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only (§4.1)._
 _1.8: Compass MCP expensive-model approval (Fable / Opus / Terra) and honest internal daily-budget 70% warning (§41)._
@@ -699,6 +700,26 @@ ALWAYS:
 NEVER: blend unrelated branches in one worker. NEVER post "1. done" while 2 and 3 are still running.
 
 This does not override §32: do not spawn parallel agents for a single focused task.
+
+---
+
+## 48. Next action after meaningful work
+
+After meaningful work (including speed, permission, or invite), the wrap-up has **one** next action for the user - one line. If there is nothing to do, write 「없음」.
+
+ALWAYS:
+
+- One next action. Not a backlog. Not 2-4 product or UI ideas.
+- Same rule after speed, permission, and invite work.
+
+NEVER:
+
+- Unsolicited 2-4 UX/product suggestion lists after UI or feature work.
+- Treat "next action" as a feature roadmap.
+
+Exception: if the user sent a **screenshot**, add a short extra on the visible screen. Still not a 2-4 idea dump.
+
+This supersedes any always-on "2-4 proactive UX ideas" habit in other user-global loops. Do not duplicate that essay here.
 
 ---
 
