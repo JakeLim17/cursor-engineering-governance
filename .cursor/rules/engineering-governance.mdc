@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.12)
+# Global Engineering Governance (1.13)
 
+_1.13: Korean native-first marketing copy - write in Korean first, no back-translation; escalate copy to higher model when unsure (§50)._
 _1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
 _1.11: After meaningful work, next action is one item only; extra screen ideas only on screenshot._
 _1.10: Split workers + numbered report together; Korean copy anti-translationese and `--` long-dash lookalike._
@@ -150,6 +151,14 @@ NEVER use en dash (U+2013), em dash (U+2014), horizontal bar, or full-width dash
 NEVER replace dash characters inside regex character classes, Unicode escapes (`\u2013` etc.), or code that **detects/strips** typographic dashes (matching/detection logic itself) - that breaks the pattern. Also skip binary files, lockfiles, generated assets. ONLY replace in human-facing copy: UI/i18n strings, markdown prose, plain-text comments. Unsure whether a dash is functional or cosmetic -> leave it and flag it.
 
 Korean UI / chat / commit copy: short Korean a person would say. NEVER translationese: `결/흐름`, `흐름` as a calque of "flow" in product UX, EN/KO slash glue (`A/B` abuse), or 「~를 통해 ~를 수행합니다」. Fix awkward AI copy before it ships.
+
+## Korean native-first marketing copy (§50)
+
+ALWAYS: Korean UI, marketing, hero, and company/about copy is written **in Korean first** - not English drafted then back-translated. If unsure about Korean marketing copy, do not settle with Composer; escalate per session policy to a higher copy/design tier (e.g. Grok).
+
+NEVER: translationese - 「~를 통해 ~를 수행」, EN/KO slash glue, `결/흐름`, awkward calques like 「이상을 현실로 만드는 소프트웨어」 or 「같은 근육」. Exception: user-confirmed intentional English headlines (e.g. `AI that makes the ideal real`).
+
+Complements `korean-copy-orthography` (spelling, spacing); does not replace it.
 
 ## Daily governance maintenance (section 46)
 

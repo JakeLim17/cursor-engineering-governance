@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.12
+**Version:** 1.13
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.13: Korean native-first marketing copy - write in Korean first, no back-translation; escalate copy to higher model when unsure (§50)._
 _1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
 _1.11: After meaningful work, next action is one item only; no unsolicited 2-4 UX lists. Extra screen ideas only when the user sent a screenshot (§48)._
 _1.10: Split workers for multi-branch requests + numbered report together (§47); Korean copy anti-translationese and `--` long-dash lookalike (§44)._
@@ -652,6 +653,8 @@ If it is unclear whether a given dash is functional (part of detection/matching 
 
 Korean UI / chat / commit copy: write short Korean a person would actually say. NEVER leave translationese: `결/흐름`, overusing `흐름` as a calque of English "flow" in product UX, gluing EN/KO with slashes (`A/B` abuse), or 「~를 통해 ~를 수행합니다」-style phrasing. Fix awkward AI copy before it ships.
 
+Marketing and about-page copy: see Section 50 (native Korean first, model escalation).
+
 ---
 
 ## 45. Final decision rule
@@ -742,6 +745,22 @@ Exception:
 
 - opsgirok `:10000` keeps its project NEVER-kill rule (still do not kill it to restart).
 - On other app ports, while working that app, restart only the PID bound to that port if needed.
+
+---
+
+## 50. Korean native-first marketing copy
+
+ALWAYS:
+
+- Write Korean UI, marketing, hero, and company/about copy **in Korean first**. Do not draft in English and back-translate.
+- If unsure about Korean marketing copy, do not settle with Composer Standard. Escalate per session policy to a higher copy/design tier (e.g. Grok for planning/copy).
+
+NEVER:
+
+- Translationese: 「~를 통해 ~를 수행」, EN/KO slash glue, `결/흐름`, or awkward calques (e.g. 「이상을 현실로 만드는 소프트웨어」, 「같은 근육」). Rewrite before shipping.
+- Exception: user-confirmed intentional English headlines (e.g. `AI that makes the ideal real`) stay as specified.
+
+Complements `korean-copy-orthography` (spelling, spacing). Does not replace it.
 
 ---
 
