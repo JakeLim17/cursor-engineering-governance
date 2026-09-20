@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.11)
+# Global Engineering Governance (1.12)
 
+_1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
 _1.11: After meaningful work, next action is one item only; extra screen ideas only on screenshot._
 _1.10: Split workers + numbered report together; Korean copy anti-translationese and `--` long-dash lookalike._
 _1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only._
@@ -163,6 +164,14 @@ When a request has **multiple independent branches** (e.g. modal motion vs mobil
 ## Next action after meaningful work (§48)
 
 After meaningful work (speed, permission, invite included): **one** next action, one line (or 「없음」). Do not append 2-4 unsolicited UX/product ideas. Screenshot from the user: a short extra on that screen only - still not a 2-4 list. Supersedes the 2-4 UX dump habit; do not duplicate that essay here.
+
+## Local dev server lifetime (§49)
+
+ALWAYS: keep the local web/dev server for the app being worked on running in the background until the user says 「꺼」 or 「그만」. If the server dies or returns 404/connection failure, restart it yourself. Do not hand off 「Ctrl+C 하세요」 or manual restart as the next step.
+
+NEVER: stop that app's dev server when work ends. NEVER use broad `pkill next` or `pkill node`.
+
+Exception: opsgirok `:10000` keeps its project NEVER-kill rule (still do not kill it to restart). On other app ports, while working that app, restart only the PID bound to that port if needed.
 
 ## Agent NEVER
 

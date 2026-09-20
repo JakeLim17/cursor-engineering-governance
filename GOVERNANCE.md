@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.11
+**Version:** 1.12
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
 _1.11: After meaningful work, next action is one item only; no unsolicited 2-4 UX lists. Extra screen ideas only when the user sent a screenshot (§48)._
 _1.10: Split workers for multi-branch requests + numbered report together (§47); Korean copy anti-translationese and `--` long-dash lookalike (§44)._
 _1.9: Commit phrasing (Korean) - 「커밋해」= commit+push, 「커밋만 해」「커밋까지」= commit only (§4.1)._
@@ -720,6 +721,27 @@ NEVER:
 Exception: if the user sent a **screenshot**, add a short extra on the visible screen. Still not a 2-4 idea dump.
 
 This supersedes any always-on "2-4 proactive UX ideas" habit in other user-global loops. Do not duplicate that essay here.
+
+---
+
+## 49. Local dev server lifetime
+
+While working on an app, the agent owns keeping its local web/dev server alive.
+
+ALWAYS:
+
+- Keep the local web/dev server for the app being worked on running in the background until the user says 「꺼」 or 「그만」.
+- If the server dies or returns 404/connection failure, restart it yourself. Do not hand off 「Ctrl+C 하세요」 or manual restart as the next step.
+
+NEVER:
+
+- Stop that app's dev server when work ends.
+- Use broad `pkill next` or `pkill node`.
+
+Exception:
+
+- opsgirok `:10000` keeps its project NEVER-kill rule (still do not kill it to restart).
+- On other app ports, while working that app, restart only the PID bound to that port if needed.
 
 ---
 
