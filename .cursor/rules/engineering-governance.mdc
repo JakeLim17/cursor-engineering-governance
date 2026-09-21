@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.13)
+# Global Engineering Governance (1.14)
 
+_1.14: Critical ops need an explicit request this turn; if the target might be production, confirm local vs 119/prod before running (§51)._
 _1.13: Korean native-first marketing copy - write in Korean first, no back-translation; escalate copy to higher model when unsure (§50)._
 _1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
 _1.11: After meaningful work, next action is one item only; extra screen ideas only on screenshot._
@@ -181,6 +182,16 @@ ALWAYS: keep the local web/dev server for the app being worked on running in the
 NEVER: stop that app's dev server when work ends. NEVER use broad `pkill next` or `pkill node`.
 
 Exception: opsgirok `:10000` keeps its project NEVER-kill rule (still do not kill it to restart). On other app ports, while working that app, restart only the PID bound to that port if needed.
+
+## Critical operations need this-turn confirmation (§51)
+
+NEVER run a critical operation unless the user explicitly asked for it **in this turn**. Prior chat, 「해보자」, or 「가능해?」 is not permission.
+
+Critical includes: production or 119 DB restore, DROP, TRUNCATE, DELETE, overwriting production, production deploy, putting a secret dump on a remote, force push, overwriting mafra from an upstream wts pull.
+
+ALWAYS: if the ask looks like a mistake, is ambiguous, or the target might be production/119, confirm once more before running (multiple choice: local vs 119/production). Do not run until that answer arrives.
+
+Not critical: copying a local dump file, adding gitignore. Guiding a command is not running it. If the guided command names a production host, still do not execute it.
 
 ## Agent NEVER
 

@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.13
+**Version:** 1.14
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.14: Critical ops need an explicit request this turn; if the target might be production, confirm local vs 119/prod before running (§51)._
 _1.13: Korean native-first marketing copy - write in Korean first, no back-translation; escalate copy to higher model when unsure (§50)._
 _1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
 _1.11: After meaningful work, next action is one item only; no unsolicited 2-4 UX lists. Extra screen ideas only when the user sent a screenshot (§48)._
@@ -761,6 +762,18 @@ NEVER:
 - Exception: user-confirmed intentional English headlines (e.g. `AI that makes the ideal real`) stay as specified.
 
 Complements `korean-copy-orthography` (spelling, spacing). Does not replace it.
+
+---
+
+## 51. Critical operations need this-turn confirmation
+
+NEVER run a critical operation unless the user explicitly asked for it **in this turn**. Prior chat, 「해보자」, or 「가능해?」 is not permission.
+
+Critical includes: production or 119 DB restore, DROP, TRUNCATE, DELETE, overwriting production, production deploy, putting a secret dump on a remote, force push, overwriting mafra from an upstream wts pull.
+
+ALWAYS: if the ask looks like a mistake, is ambiguous, or the target might be production/119, confirm once more before running (multiple choice: local vs 119/production). Do not run until that answer arrives.
+
+Not critical: copying a local dump file, adding gitignore. Guiding a command is not running it. If the guided command names a production host, still do not execute it.
 
 ---
 
