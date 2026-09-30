@@ -1,9 +1,10 @@
 # Global Cursor Engineering Governance
 
-**Version:** 1.14
+**Version:** 1.15
 **Scope:** All projects developed through a Cursor environment.
 **Not** a product-specific rule. Do not put product requirements here.
 
+_1.15: New UI reuses the app's colors and fonts; body and labels must read clearly on their background, including temp screens (§20)._
 _1.14: Critical ops need an explicit request this turn; if the target might be production, confirm local vs 119/prod before running (§51)._
 _1.13: Korean native-first marketing copy - write in Korean first, no back-translation; escalate copy to higher model when unsure (§50)._
 _1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
@@ -427,6 +428,8 @@ Avoid: unnecessary polling/realtime, N+1 queries, loading entire datasets, giant
 Aim for: clear hierarchy, consistent components, responsive layouts, accessibility, good loading/empty/error states, clear feedback, mobile usability.
 
 Visual design should serve usability. Do not add effects merely because they are fashionable.
+
+When adding UI (modals, forms, or new screens): reuse the target app's existing colors, typography, and components; do not invent a new pastel or off-brand palette. Body copy, headings, and labels must be immediately readable against their background - never light text on a light background. Temporary and internal-only screens are not exempt.
 
 ---
 

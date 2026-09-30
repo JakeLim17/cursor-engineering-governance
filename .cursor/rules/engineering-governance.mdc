@@ -3,8 +3,9 @@ description: Global engineering governance — security, accounts, tenants, depl
 alwaysApply: true
 ---
 
-# Global Engineering Governance (1.14)
+# Global Engineering Governance (1.15)
 
+_1.15: New UI reuses the app's colors and fonts; body and labels must read clearly on their background, including temp screens (§20)._
 _1.14: Critical ops need an explicit request this turn; if the target might be production, confirm local vs 119/prod before running (§51)._
 _1.13: Korean native-first marketing copy - write in Korean first, no back-translation; escalate copy to higher model when unsure (§50)._
 _1.12: Local dev server - keep in background until user stops; agent restarts on failure; no pkill; opsgirok :10000 exception (§49)._
@@ -128,6 +129,10 @@ Compass MCP: do not launch Fable / any Opus / Terra unless the current user turn
 
 Do not silently swallow errors. User errors must not leak secrets/stacks. Never log secrets.  
 Before claiming meaningful work done: lint / typecheck / test / build as applicable. **Do not fake completion** — if a step was not run, say so explicitly; never claim green CI by skipping tests.
+
+## UI brand and readability (§20)
+
+ALWAYS: New UI, modals, and forms reuse the target app's existing colors, typography, and components - do not invent a new pastel or off-brand palette. Body, headings, and labels must read immediately against their background (no light-on-light). Temporary and internal screens are not exempt.
 
 ## CI completeness — all jobs, not just unit/build
 
